@@ -13,9 +13,11 @@ from dateutil import parser
 
 app = Flask(__name__)
 
-@app.before_first_request
+@app.before_request
 def initialize():
-    init_db()
+    if not hasattr(app, 'db_initialized'):
+        init_db()
+        app.db_initialized = True
 
 @app.route('/')
 def index():
