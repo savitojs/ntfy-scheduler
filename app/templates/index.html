@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Scheduler</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+    <header class="company-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="{{ url_for('static', filename='images/savnav_logo.png') }}" alt="Sav Nav Logo" class="company-logo img-fluid">
+                </div>
+                <div class="col-md-8 d-flex justify-content-between align-items-center">
+                    <h1 class="company-name mb-0">Sav Nav's RemindMe!</h1>
+                    <div class="col-md-2 text-right d-flex align-items-center justify-content-end">
+                        <i class="far fa-clock"></i>
+                        <span id="local-time" class="ml-2"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-dark sidebar py-4">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" href="#" id="schedule-link">Schedule a Message</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" id="view-scheduled-link">View Scheduled Messages</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" id="view-sent-link">View Sent Messages</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" id="manage-topics-link">Manage Topics</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" id="manage-servers-link">Manage Servers</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 content">
+                <div id="notification" class="alert alert-info custom-hidden"></div>
+                
+                <div id="schedule-message-section">
+                    <h1>Schedule a Message</h1>
+                    <form id="schedule-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="header-title">Title <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="This can be anything but short title"></i></label>
+                                <input type="text" class="form-control" id="header-title" name="header-title">
+                                <small class="form-text text-muted">Enter the title of the message</small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="header-priority">Priority <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Priority, which defines how urgently your phone notifies you, Large the number long the notification and vibration"></i></label>
+                                <input type="text" class="form-control" id="header-priority" name="header-priority">
+                                <small class="form-text text-muted">Enter the Priority of the message between (1-5) - <a href="https://docs.ntfy.sh/publish/#message-priority">More info</a></small>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="header-tags">Tags <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="This feature is useful for things like warnings (⚠️, ️🚨, or 🚩), but also to simply tag messages otherwise"></i></label>
+                                <input type="text" class="form-control" id="header-tags" name="header-tags">
+                                <small class="form-text text-muted">Enter the Tags / Emoji 🥳 🎉 to add in message, seperated by comma (,) <a href="https://docs.ntfy.sh/publish/#tags-emojis">More info</a></small>
+                            </div>
+                        </div>                   
+                        <div class="form-group">
+                            <label for="message">Message <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Enter the message to send"></i></label>
+                            <textarea class="form-control resizable" id="message" name="message" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="interval">Repeat Interval <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Enter the interval to repeat the message"></i></label>
+                            <select class="form-control" id="interval" name="interval">
+                                <option value="">None</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group custom-interval custom-hidden">
+                            <label for="custom-days">Repeat Every (days) <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="This can be custom days such as repeat evey 3 days"></i></label>
+                            <input type="number" class="form-control" id="custom-days" name="custom-days">
+                        </div>
+                        <div class="form-group">
+                            <label for="datetime">Date and Time <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Choose the Date and Time of the message"></i></label>
+                            <input type="text" class="form-control" id="datetime" name="datetime">
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="send-now" name="send-now">
+                            <label class="form-check-label" for="send-now">Send Now <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Checking Send Now disables selecting date/time"></i></label>
+                        </div>
+                        <div class="form-group">
+                            <label for="server">Server <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="Name of the NTFY server"></i></label>
+                            <select class="form-control" id="server" name="server" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                            <small class="form-text text-muted">Enter the NTFY server URL, if empty, add in Manage Server section</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="topic">Topic <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" title="This is where messages will be sent"></i></label>
+                            <select class="form-control" id="topic" name="topic" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                            <small class="form-text text-muted">Enter the NTFY Topic/Channel, if empty, add in Manage Topic/Channel section</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Schedule</button>
+                    </form>
+                </div>
+
+                <div id="scheduled-messages-section" class="custom-hidden">
+                    <h2 class="mt-5">Scheduled Messages</h2>
+                    <table class="table table-bordered" id="scheduled-messages">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Message</th>
+                                <th>Scheduled Date and Time</th>
+                                <th>Next Schedule</th>
+                                <th>Server</th>
+                                <th>Topic</th>
+                                <th>Interval</th>
+                                <th>Headers</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                    <div id="scheduled-calendar"></div>
+                </div>
+                <div id="sent-messages-section" class="custom-hidden">
+                    <h2 class="mt-5">Sent Messages</h2>
+                    <table class="table table-bordered" id="sent-messages">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Message</th>
+                                <th>Scheduled Date and Time</th>
+                                <th>Server</th>
+                                <th>Topic</th>
+                                <th>Sent At</th>
+                                <th>Headers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                    <div id="sent-calendar"></div>
+                </div>
+                <div id="manage-topics-section" class="custom-hidden">
+                    <h2 class="mt-5">Manage Topics</h2>
+                    <form id="add-topic-form">
+                        <div class="form-group">
+                            <label for="new-topic">New Topic</label>
+                            <input type="text" class="form-control" id="new-topic" name="new-topic" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Topic</button>
+                    </form>
+                    <table class="table table-bordered mt-3" id="topics-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Topic</th>
+                                <th>Default</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="manage-servers-section" class="custom-hidden">
+                    <h2 class="mt-5">Manage Servers</h2>
+                    <form id="add-server-form">
+                        <div class="form-group">
+                            <label for="new-server">New Server</label>
+                            <input type="text" class="form-control" id="new-server" name="new-server" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Server</button>
+                    </form>
+                    <table class="table table-bordered mt-3" id="servers-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Server</th>
+                                <th>Default</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>  
+    <script>
+        function getRandomGradient() {
+            const colors = [
+                ['#17a2b8', '#ebbb1e'],  // Teal to Yellow
+                ['#ff7e5f', '#feb47b'],  // Coral to Peach
+                ['#6a11cb', '#2575fc'],  // Purple to Blue
+                ['#ff6a00', '#ee0979'],  // Orange to Pink
+                ['#00c6ff', '#0072ff'],  // Light Blue to Dark Blue
+                ['#ff6f61', '#de6262'],  // Light Coral to Deep Coral
+                ['#7f00ff', '#e100ff'],  // Violet to Magenta
+                ['#00b09b', '#96c93d'],  // Greenish Blue to Lime Green
+                ['#f46b45', '#eea849'],  // Orange Red to Light Orange
+                ['#30cfd0', '#330867'],  // Cyan to Deep Purple
+                ['#fc5c7d', '#6a82fb'],  // Pink to Light Purple
+                ['#76b852', '#8dc26f'],  // Light Green to Medium Green
+                ['#a8ff78', '#78ffd6'],  // Light Green to Light Blue
+                ['#3a7bd5', '#3a6073'],  // Sky Blue to Slate Blue
+                ['#e96443', '#904e95'],  // Orange to Purple
+                ['#ffafbd', '#ffc3a0'],  // Light Pink to Peach
+                ['#2193b0', '#6dd5ed'],  // Blue to Light Blue
+                ['#cc2b5e', '#753a88'],  // Red Violet to Dark Violet
+                ['#ee9ca7', '#ffdde1'],  // Light Pink to Very Light Pink
+                ['#ff9966', '#ff5e62'],  // Orange to Red
+                ['#833ab4', '#fd1d1d'],  // Purple to Red
+                ['#bdc3c7', '#2c3e50'],  // Light Gray to Dark Gray
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    
+        function applyRandomGradient() {
+            const headerGradient = getRandomGradient();
+            const sidebarGradient = getRandomGradient();
+    
+            document.querySelector('.company-header').style.borderImage = `linear-gradient(to left, ${headerGradient[0]}, ${headerGradient[1]}) 1`;
+            document.querySelector('.sidebar').style.borderImage = `linear-gradient(to top, ${sidebarGradient[0]}, ${sidebarGradient[1]}) 1`;
+        }
+    
+        document.addEventListener('DOMContentLoaded', applyRandomGradient);
+    </script>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' };
+            const timeString = now.toLocaleTimeString([], options);
+            document.getElementById('local-time').innerText = timeString;
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000); // Update every second
+        });
+    </script>    
+</body>
+</html>

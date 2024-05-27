@@ -1,0 +1,136 @@
+/* General Styles */
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+#local-time {
+    font-size: 36px;
+    font-weight: lighter;
+    color: white;
+    margin-left: auto;
+}
+
+.text-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+.text-right span {
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.text-right i {
+    margin-right: 5px;
+    font-size: 36px;
+}
+
+.company-header {
+    background-color: #343a40;
+    color: white;
+    height: 130px; /* Set the explicit height */
+    border-bottom: 4px solid transparent; /* Use transparent to allow gradient border */
+    background-image: linear-gradient(to right, #17a2b8, #ebbb1e);
+    background-size: 200% 200%;
+    animation: gradientAnimation 5s linear infinite;
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2); /* Add shadow */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensure content is spaced correctly */
+    padding: 0 20px; /* Add padding for left and right */
+    transition: background-image 5s ease-in-out; /* Add transition for background */
+}
+
+.sidebar {
+    background-color: #212529;
+    height: 100vh;
+    border-right: 4px solid transparent; /* Use transparent to allow gradient border */
+    background-image: linear-gradient(to top, #17a2b8, #ebbb1e);
+    background-size: 200% 200%;
+    animation: gradientAnimation 5s linear infinite;
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2); /* Add shadow */
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    flex: 1;
+}
+
+.company-logo {
+    max-width: 100px;
+    height: auto;
+}
+
+.company-name {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    padding-left: 10px;
+}
+
+/* Sidebar */
+
+.sidebar .nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
+    color: #adb5bd;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #17a2b8; /* Accent color */
+    color: white;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    background-color: #17a2b8; /* Accent color */
+    color: white;
+}
+
+.content {
+    padding-top: 20px;
+}
+
+/* Custom Hidden Class */
+.custom-hidden {
+    display: none !important;
+}
+
+/* Notification */
+#notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Calendar */
+#scheduled-calendar,
+#sent-calendar {
+    max-width: 900px;  /* Set the maximum width */
+    margin: 0 auto;    /* Center the calendar horizontally */
+    height: 600px;     /* Set the height of the calendar */
+    overflow: hidden;  /* Prevent overflowing content */
+}
+
+/* Alert Info */
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
