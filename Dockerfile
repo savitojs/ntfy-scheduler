@@ -21,7 +21,7 @@ USER root
 RUN chmod +x /entrypoint.sh
 
 # Create the database file with appropriate permissions
-RUN touch /app/messages.db && chmod 666 /app/messages.db && chown 1001:0 /app/messages.db
+RUN mkdir -p /app/data && touch /app/data/messages.db && chmod 666 /app/data/messages.db && chown 1001:0 /app/data/messages.db
 
 # Expose port 5000 for the Flask application
 EXPOSE 5000

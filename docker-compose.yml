@@ -1,0 +1,12 @@
+---
+version: "2.1"
+services:
+  ntfy-scheduler:
+    ports:
+      - '5000:5000'
+    volumes:
+      - "./data:/app/data"
+    image: docker.io/savitojs/ntfy-scheduler:latest
+    container_name: ntfy-scheduler
+    restart: always
+

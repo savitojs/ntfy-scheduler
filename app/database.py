@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 import pytz
 from dateutil import parser
 
-DATABASE_PATH = '/app/messages.db'
+DATABASE_PATH = '/app/data/messages.db'
 
 def init_db():
+    conn = None
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         c = conn.cursor()
@@ -27,7 +28,8 @@ def init_db():
     except Exception as e:
         print(f"Exception in init_db: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 def add_message(message, datetime, server, topic, interval, custom_days, timezone, headers):
     try:
