@@ -38,11 +38,10 @@ Make sure you have Docker and Docker Compose installed on your machine.
 │   ├── templates
 │   │   └── index.html
 │   ├── static
-│   │   ├── css
-│   │   │   └── styles.css
-│   │   ├── js
-│   │   │   └── scripts.js
-│   └── messages.db
+│       ├── css
+│       │   └── styles.css
+│       ├── js
+│       │   └── scripts.js
 └── README.md
 ```
 

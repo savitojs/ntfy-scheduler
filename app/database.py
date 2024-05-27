@@ -83,7 +83,7 @@ def edit_message(id, message, datetime, server, topic, interval, custom_days, ti
         if datetime.tzinfo is None:
             raise ValueError("Datetime object must be timezone-aware")
         utc_time = datetime.astimezone(pytz.utc)
-        utc_datetime = utc_time.strftime('%Y-%m-%d %H:%M:%S')
+        utc_datetime = utc_time.strftime('%Y-%m-%dT%H:%M:%S%z')
 
         conn = sqlite3.connect(DATABASE_PATH)
         c = conn.cursor()

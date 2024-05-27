@@ -7,7 +7,7 @@ import json
 import pytz
 from dateutil import parser
 
-DATABASE_PATH = '/app/messages.db'
+DATABASE_PATH = '/app/data/messages.db'
 
 def send_message(message, server, topic, headers):
     url = f'https://{server}/{topic}'
