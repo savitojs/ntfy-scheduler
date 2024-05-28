@@ -26,17 +26,18 @@ def index():
 @app.route('/schedule', methods=['POST'])
 def schedule():
     try:
-        message = request.form['message']
-        datetime_str = request.form['datetime']
-        server = request.form['server']
-        topic = request.form['topic']
-        interval = request.form.get('interval', '')
-        custom_days = request.form.get('custom_days', '')
-        timezone_str = request.form.get('timezone', 'UTC')
+        data = request.json if request.is_json else request.form
+        message = data['message']
+        datetime_str = data['datetime']
+        server = data['server']
+        topic = data['topic']
+        interval = data.get('interval', '')
+        custom_days = data.get('custom_days', '')
+        timezone_str = data.get('timezone', 'UTC')
         headers = {
-            "Title": request.form.get('header_title', ''),
-            "Priority": request.form.get('header_priority', ''),
-            "Tags": request.form.get('header_tags', '')
+            "Title": data.get('header_title', ''),
+            "Priority": data.get('header_priority', ''),
+            "Tags": data.get('header_tags', '')
         }
 
         local_tz = pytz.timezone(timezone_str)
